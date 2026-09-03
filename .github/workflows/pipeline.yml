@@ -1,0 +1,32 @@
+name: Pipeline CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configuração do Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build
+        run: |
+          python -m py_compile main.py biblioteca/*.py
+          echo "Build concluído com sucesso!"
+
+      - name: Test
+        run: |
+          python -m unittest discover -s tests -v
+
+      - name: Deploy
+        run: |
+          echo "Deploy realizado com sucesso!"
