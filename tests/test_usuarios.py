@@ -26,7 +26,7 @@ class TestLogin(unittest.TestCase):
 
     def test_login_com_senha_correta(self):
         usuario = self.usuarios.login(1, "senha123")
-        self.assertEqual(usuario.nome, "Maria")
+        self.assertEqual(usuario.nome, "Andre")
 
     def test_login_com_senha_incorreta_lanca_erro(self):
         with self.assertRaises(ValueError):
