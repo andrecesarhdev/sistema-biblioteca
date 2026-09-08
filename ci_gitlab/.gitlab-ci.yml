@@ -1,0 +1,23 @@
+image: python:3.11-slim
+
+stages:
+  - build
+  - test
+  - deploy
+
+build_job:
+  stage: build
+  script:
+    - echo "Executando etapa de Build..."
+    - python -m compileall .
+
+test_job:
+  stage: test
+  script:
+    - echo "Executando testes automatizados com unittest..."
+    - python -m unittest discover -s tests -v
+
+deploy_job:
+  stage: deploy
+  script:
+    - echo "Deploy realizado com sucesso!"
