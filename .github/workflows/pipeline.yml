@@ -4,10 +4,18 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  build-test-deploy:
+  build:
     runs-on: ubuntu-latest
+    timeout-minutes: 4
 
     steps:
       - name: Checkout do código
@@ -16,17 +24,49 @@ jobs:
       - name: Configuração do Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
+
+      - name: Verificar versão do Python
+        run: |
+          python --version
 
       - name: Build
         run: |
           python -m py_compile main.py biblioteca/*.py
           echo "Build concluído com sucesso!"
 
-      - name: Test
+  test:
+    name: Testes Automatizados
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Executar testes automatizados
         run: |
           python -m unittest discover -s tests -v
 
-      - name: Deploy
+      - name: Testes concluídos
+        run: echo "Todos os testes foram executados com sucesso!"
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Simular Deploy
         run: |
+          echo "DEPLOY DO SISTEMA DE BIBLIOTECA"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
           echo "Deploy realizado com sucesso!"
