@@ -35,6 +35,27 @@ jobs:
           python -m py_compile main.py biblioteca/*.py
           echo "Build concluído com sucesso!"
 
+  security:
+  name: Segurança (Bandit + pip-audit)
+  runs-on: ubuntu-latest
+  needs: build
+  timeout-minutes: 5
+  steps:
+    - name: Checkout do código
+      uses: actions/checkout@v4
+    - name: Configurar Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+    - name: Atualizar pip e instalar dependencias
+      run: |
+        echo "Executando analise estatica de seguranca com Bandit..."
+        bandit -r .
+    - name: Executar pip-audit
+      run: |
+        echo "Verificando dependencias com pip-audit..."
+        pip-audit
+
   test:
     name: Testes Automatizados
     runs-on: ubuntu-latest
