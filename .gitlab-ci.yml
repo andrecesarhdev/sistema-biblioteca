@@ -2,6 +2,7 @@ image: python:3.11-slim
 
 stages:
   - build
+  - security
   - test
   - deploy
 
@@ -9,7 +10,22 @@ build_job:
   stage: build
   script:
     - echo "Executando etapa de Build..."
+    - pip install -r requirements.txt
     - python -m compileall .
+
+bandit_job:
+  stage: security
+  script:
+  - pip install -r requirements.txt
+  - echo "Executando analise estatica de seguranca com Bandit..."
+  - bandit -r .
+
+pip_audit_job:
+  stage: secutity
+  script:
+  - pip install -r requirements.txt
+  - echo "Verificando dependencias com pip-audit..."
+  - pip-audit
 
 test_job:
   stage: test
