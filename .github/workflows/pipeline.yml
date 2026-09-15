@@ -4,15 +4,18 @@ on:
   push:
     branches:
       - main
+
   pull_request:
     branches:
       - main
+
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
+
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 4
@@ -36,35 +39,40 @@ jobs:
           echo "Build concluído com sucesso!"
 
   security:
-    name: Seguranca (Bandit e pip-audit)
+    name: Segurança (Bandit e pip-audit)
     runs-on: ubuntu-latest
     needs: build
-    timeout-minutes: 5
+    timeout-minutes: 4
+
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
+
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Atualizar pip e instalar dependencias
+
+      - name: Atualizar pip e instalar dependências
         run: |
           pip install --upgrade pip setuptools
           pip install -r requirements.txt
+
       - name: Executar Bandit
         run: |
-          echo "Executando analise estatica de seguranca com Bandit..."
+          echo "Executando análise estática de segurança com Bandit..."
           bandit -r .
+
       - name: Executar pip-audit
         run: |
-          echo "Verificando dependencias com pip-audit..."
+          echo "Verificando dependências com pip-audit..."
           pip-audit
 
   test:
     name: Testes Automatizados
     runs-on: ubuntu-latest
-    needs: build
-    timeout-minutes: 5
+    needs: security
+    timeout-minutes: 4
 
     steps:
       - name: Checkout do código
@@ -80,12 +88,14 @@ jobs:
           python -m unittest discover -s tests -v
 
       - name: Testes concluídos
-        run: echo "Todos os testes foram executados com sucesso!"
+        run: |
+          echo "Todos os testes foram executados com sucesso!"
 
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
     needs: test
+
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
