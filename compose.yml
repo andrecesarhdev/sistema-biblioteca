@@ -1,6 +1,6 @@
 services:
   biblioteca:
-    bild: .
+    build: .
     stdin_open: true
     tty: true
     ports:
