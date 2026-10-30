@@ -7,6 +7,8 @@ services:
       - "8080:8080"
     volumes:
       - biblioteca-dados:/app/dados
+    env_file:
+      - .env # <-- Adicionando esta linha para carregar o arquivo .env automaticamente
     networks:
       - biblioteca-net
 
