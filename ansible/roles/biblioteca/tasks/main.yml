@@ -1,0 +1,18 @@
+- name: 4. Copiar arquivos avulsos principais
+  ansible.builtin.copy:
+    src: "/mnt/c/Users/Mark-Nitro/Desktop/Sistema Biblioteca/sistema-biblioteca/{{ item }}"
+    dest: "{{ app_dir }}/{{ item }}"
+  loop:
+    - main.py
+    - database.py
+    - requirements.txt
+
+- name: 5. Copiar o conteúdo da pasta biblioteca para o destino correto
+  ansible.builtin.copy:
+    src: "/mnt/c/Users/Mark-Nitro/Desktop/Sistema Biblioteca/sistema-biblioteca/biblioteca/"
+    dest: "{{ app_dir }}/biblioteca/"
+
+- name: 6. Copiar o conteúdo da pasta de testes para o destino correto
+  ansible.builtin.copy:
+    src: "/mnt/c/Users/Mark-Nitro/Desktop/Sistema Biblioteca/sistema-biblioteca/tests/"
+    dest: "{{ app_dir }}/tests/"
