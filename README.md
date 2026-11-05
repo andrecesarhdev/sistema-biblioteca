@@ -11,13 +11,15 @@ Sistema de gerenciamento de biblioteca em Python, desenvolvido em equipe na form
 
 ## Stack técnica
 
-| Área | Tecnologia |
-|---|---|
-| Linguagem | Python |
-| Testes | unittest |
-| Containerização | Docker |
-| CI/CD | GitHub Actions e GitLab CI |
-| Versionamento | Git, com repositórios espelhados no GitHub e no GitLab |
+| Área                        | Tecnologia                                             |
+| --------------------------- | ------------------------------------------------------ |
+| Linguagem                   | Python                                                 |
+| Testes de Aplicação         | unittest                                               |
+| Automação de Infraestrutura | Ansible                                                |
+| Testes de Infraestrutura    | Molecule e Testinfra                                   |
+| Containerização             | Docker                                                 |
+| CI/CD                       | GitHub Actions e GitLab CI                             |
+| Versionamento               | Git, com repositórios espelhados no GitHub e no GitLab |
 
 ## Pipelines de CI/CD
 
@@ -30,45 +32,74 @@ O projeto tem pipelines configurados em duas plataformas, com as mesmas etapas:
 - GitHub Actions: `.github/workflows/`
 - GitLab CI: `.gitlab-ci.yml`
 
+### Estrutura da automação:
+
+- **`ansible/ansible.cfg`**: Configuração central do Ansible.
+- **`ansible/inventory.ini`**: Inventário local (localhost).
+- **`ansible/playbook.yml`**: Playbook principal que executa a Role `biblioteca`.
+- **`ansible/roles/biblioteca/`**: Role responsável por validar o Python, criar o diretório `/tmp/sistema-biblioteca`, copiar a aplicação e seus testes, criar o `.venv`, instalar dependências e rodar a suíte de testes.
+
 ## Estrutura do projeto
 
-```
-sistema-biblioteca/
-├── .github/workflows/   # Pipeline do GitHub Actions
-├── biblioteca/          # Código da aplicação
-├── tests/               # Testes automatizados
-├── .gitlab-ci.yml       # Pipeline do GitLab CI
-├── Dockerfile           # Imagem Docker da aplicação
-├── main.py              # Ponto de entrada
-└── requirements.txt     # Dependências
-```
+`sistema-biblioteca/
+├── .github/workflows/ # Pipeline do GitHub Actions
+├── ansible/ # Automação e papéis do Ansible (Role biblioteca & Molecule)
+│ ├── ansible.cfg
+│ ├── inventory.ini
+│ ├── playbook.yml
+│ └── roles/
+│ └── biblioteca/
+│ ├── defaults/
+│ ├── tasks/
+│ └── molecule/
+├── biblioteca/ # Código da aplicação
+├── tests/ # Testes automatizados da aplicação
+├── .gitlab-ci.yml # Pipeline do GitLab CI
+├── Dockerfile # Imagem Docker da aplicação
+├── main.py # Ponto de entrada
+└── requirements.txt # Dependências
 
 ## Rodando localmente
 
 ### Com Python
 
-```bash
-git clone https://github.com/andrecesarhdev/sistema-biblioteca.git
+````bash
+git clone (https://github.com/andrecesarhdev/sistema-biblioteca.git)
 cd sistema-biblioteca
 pip install -r requirements.txt
 python main.py
-```
 
 ### Com Docker
 
 ```bash
 docker build -t sistema-biblioteca .
 docker run -it sistema-biblioteca
-```
+````
 
 ### Rodando os testes
 
+Rodando a automação e testes com Ansible & Molecule
+
+````bash
+cd ansible
+ansible-playbook -i inventory.ini playbook.yml
+
+executar a validação de idempotência e testes de infraestrutura com Molecule:
+
+```bash
+cd ansible/roles/biblioteca
+export ANSIBLE_ROLES_PATH="$(pwd)/.."
+molecule test
+
+### Rodando os testes unitários da aplicação
 ```bash
 python -m unittest discover tests
-```
+````
 
 ## Equipe
 
 Projeto desenvolvido em grupo na turma de DevOps da FAP/Aponti:
 
 - André César ([GitHub](https://github.com/andrecesarhdev) · [LinkedIn](https://www.linkedin.com/in/andrecesar-dev/))
+- Marcos Nascimento (https://github.com/MarcosNasc-DEV)
+- Luiz Felipe (https://github.com/LuizFelipeMoraesSantos)
