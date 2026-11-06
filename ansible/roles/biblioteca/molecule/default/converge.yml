@@ -1,0 +1,11 @@
+---
+- name: Converge
+  hosts: localhost
+  connection: local
+  become: true
+  gather_facts: true
+  vars:
+    app_dir: /tmp/sistema-biblioteca
+    venv_dir: /tmp/sistema-biblioteca/venv
+  roles:
+    - role: biblioteca
