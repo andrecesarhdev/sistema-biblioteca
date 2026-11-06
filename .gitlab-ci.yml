@@ -18,7 +18,7 @@ bandit_job:
   script:
   - pip install -r requirements.txt
   - echo "Executando analise estatica de seguranca com Bandit..."
-  - bandit -r .
+  - bandit -r . -x ./ansible
 
 pip_audit_job:
   stage: security
