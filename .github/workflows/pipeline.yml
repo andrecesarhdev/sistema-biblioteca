@@ -61,7 +61,7 @@ jobs:
       - name: Executar Bandit
         run: |
           echo "Executando análise estática de segurança com Bandit..."
-          bandit -r .
+          bandit -r . -x ./ansible
 
       - name: Executar pip-audit
         run: |
