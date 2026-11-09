@@ -1,0 +1,54 @@
+---
+- name: 1. Verificar se o Python 3 esta instalado
+  ansible.builtin.command: python3 --version
+  register: python_check
+  changed_when: false
+
+- name: 2. Exibir a versao do Python encontrada
+  ansible.builtin.debug:
+    msg: "{{ python_check.stdout }}"
+
+- name: 3. Criar o diretorio de destino da aplicacao
+  ansible.builtin.file:
+    path: "{{ app_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: 4. Copiar arquivos base e modulos da aplicacao
+  ansible.builtin.copy:
+    src: "{{ role_path }}/../../../{{ item }}"
+    dest: "{{ app_dir }}/{{ item }}"
+    mode: '0644'
+  loop:
+    - main.py
+    - database.py
+    - requirements.txt
+
+- name: 5. Copiar pacote biblioteca
+  ansible.builtin.copy:
+    src: "{{ role_path }}/../../../biblioteca"
+    dest: "{{ app_dir }}/"
+    mode: '0755'
+
+- name: 6. Copiar pasta tests/
+  ansible.builtin.copy:
+    src: "{{ role_path }}/../../../tests"
+    dest: "{{ app_dir }}/"
+    mode: '0755'
+
+- name: 7 e 8. Criar virtualenv e instalar dependencias
+  ansible.builtin.pip:
+    requirements: "{{ app_dir }}/requirements.txt"
+    virtualenv: "{{ venv_dir }}"
+    virtualenv_command: python3 -m venv
+
+- name: 9. Executar os testes automatizados da aplicacao
+  ansible.builtin.command: "{{ venv_dir }}/bin/python -m unittest discover -s tests -v"
+  args:
+    chdir: "{{ app_dir }}"
+  register: test_results
+  changed_when: false
+
+- name: 10. Exibir resultado dos testes
+  ansible.builtin.debug:
+    var: test_results.stderr_lines

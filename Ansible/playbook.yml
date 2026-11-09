@@ -1,6 +1,7 @@
 ---
 - name: Configurar ambiente da Biblioteca
-  hosts: biblioteca_servers
-  become: true
+  hosts: servidores
+  connection: local
+  become: false
   roles:
     - biblioteca
