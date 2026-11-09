@@ -34,16 +34,16 @@ O projeto tem pipelines configurados em duas plataformas, com as mesmas etapas:
 
 ### Estrutura da automação:
 
-- **`ansible/ansible.cfg`**: Configuração central do Ansible.
-- **`ansible/inventory.ini`**: Inventário local (localhost).
-- **`ansible/playbook.yml`**: Playbook principal que executa a Role `biblioteca`.
-- **`ansible/roles/biblioteca/`**: Role responsável por validar o Python, criar o diretório `/tmp/sistema-biblioteca`, copiar a aplicação e seus testes, criar o `.venv`, instalar dependências e rodar a suíte de testes.
+- **`Ansible/ansible.cfg`**: Configuração central do Ansible.
+- **`Ansible/inventory.ini`**: Inventário local (localhost).
+- **`Ansible/playbook.yml`**: Playbook principal que executa a Role `biblioteca`.
+- **`Ansible/roles/biblioteca/`**: Role responsável por validar o Python, criar o diretório `/tmp/sistema-biblioteca`, copiar a aplicação e seus testes, criar o `.venv`, instalar dependências e rodar a suíte de testes.
 
 ## Estrutura do projeto
 
 `sistema-biblioteca/
 ├── .github/workflows/ # Pipeline do GitHub Actions
-├── ansible/ # Automação e papéis do Ansible (Role biblioteca & Molecule)
+├── Ansible/ # Automação e papéis do Ansible (Role biblioteca & Molecule)
 │ ├── ansible.cfg
 │ ├── inventory.ini
 │ ├── playbook.yml
@@ -81,13 +81,13 @@ docker run -it sistema-biblioteca
 Rodando a automação e testes com Ansible & Molecule
 
 ````bash
-cd ansible
+cd Ansible
 ansible-playbook -i inventory.ini playbook.yml
 
 executar a validação de idempotência e testes de infraestrutura com Molecule:
 
 ```bash
-cd ansible/roles/biblioteca
+cd Ansible/roles/biblioteca
 export ANSIBLE_ROLES_PATH="$(pwd)/.."
 molecule test
 
