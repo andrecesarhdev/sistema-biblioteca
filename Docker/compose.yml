@@ -1,0 +1,44 @@
+services:
+  biblioteca:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    stdin_open: true
+    tty: true
+    ports:
+      - "8080:8080"
+      - "8000:8000" # porta onde a aplicação vai expor as métricas
+    volumes:
+      - biblioteca-dados:/app/dados
+    env_file:
+      - ../.env # o .env continua na raiz do projeto
+    networks:
+      - biblioteca-net
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/alert-rules.yml:/etc/prometheus/alert-rules.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - biblioteca
+      - alertmanager
+    networks:
+      - biblioteca-net
+
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    ports:
+      - "9093:9093"
+    networks:
+      - biblioteca-net
+
+volumes:
+  biblioteca-dados:
+
+networks:
+  biblioteca-net:

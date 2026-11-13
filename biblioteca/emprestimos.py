@@ -24,7 +24,8 @@ class GerenciadorEmprestimos:
         self.proximo_id = 1
         self.gerenciador_usuarios = gerenciador_usuarios
         self.gerenciador_livros = gerenciador_livros
-
+        
+    # MONITORAMENTO: contabilizar empréstimos realizados
     def emprestar(self, id_usuario, id_livro):
         usuario = self.gerenciador_usuarios.buscar(id_usuario)
         if usuario is None:
@@ -42,7 +43,8 @@ class GerenciadorEmprestimos:
         self.emprestimos[self.proximo_id] = emprestimo
         self.proximo_id += 1
         return emprestimo
-
+    
+    # MONITORAMENTO: contabilizar devoluções realizadas
     def devolver(self, id_emprestimo):
         emprestimo = self.emprestimos.get(id_emprestimo)
         if emprestimo is None:

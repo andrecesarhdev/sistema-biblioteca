@@ -1,5 +1,8 @@
 from biblioteca import GerenciadorUsuarios, GerenciadorLivros, GerenciadorEmprestimos
+import monitoramento  # estrutura de monitoramento (Prometheus)
 
+# MONITORAMENTO: iniciar o servidor de métricas aqui
+# monitoramento.iniciar_servidor_metricas()
 
 def cadastrar_usuario(usuarios):
     id_usuario = int(input("Digite o ID do novo usuário: "))
