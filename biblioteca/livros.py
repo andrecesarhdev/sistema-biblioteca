@@ -16,6 +16,7 @@ class GerenciadorLivros:
 
         self.livros = {}
 
+    # MONITORAMENTO: contabilizar livros cadastrados
     def cadastrar(self, id_livro, titulo):
 
         if id_livro in self.livros:

@@ -2,3 +2,4 @@ boto3
 python-dotenv
 bandit
 pip-audit
+prometheus-client

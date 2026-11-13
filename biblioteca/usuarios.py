@@ -15,7 +15,8 @@ class GerenciadorUsuarios:
     def __init__(self):
 
         self.usuarios = {}
-
+        
+    # MONITORAMENTO: contabilizar usuários cadastrados
     def cadastrar(self, id_usuario, nome, senha):
 
         if id_usuario in self.usuarios:
