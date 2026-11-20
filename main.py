@@ -1,8 +1,13 @@
+import logging
+
 from biblioteca import GerenciadorUsuarios, GerenciadorLivros, GerenciadorEmprestimos
+from biblioteca.logs import configurar_logging
 import monitoramento  # estrutura de monitoramento (Prometheus)
 
 # MONITORAMENTO: iniciar o servidor de métricas aqui
 # monitoramento.iniciar_servidor_metricas()
+
+log_emprestimo = logging.getLogger("emprestimo")
 
 def cadastrar_usuario(usuarios):
     id_usuario = int(input("Digite o ID do novo usuário: "))
@@ -49,6 +54,9 @@ def pegar_livro_emprestado(usuario_logado, emprestimos, livros):
         print(f"Empréstimo realizado: {emprestimo}")
     except ValueError as erro:
         print(f"Erro ao pegar livro emprestado: {erro}")
+    except Exception as erro:
+        log_emprestimo.error("Falha ao realizar empréstimo: erro inesperado (id_livro=%s, tipo=%s)", id_livro, type(erro).__name__)
+        print("Erro inesperado ao pegar livro emprestado.")
 
 
 def devolver_livro(emprestimos):
@@ -84,6 +92,7 @@ def menu_usuario_logado(usuario_logado, emprestimos, livros):
 
 
 def main():
+    configurar_logging()
     usuarios = GerenciadorUsuarios()
     livros = GerenciadorLivros()
     emprestimos = GerenciadorEmprestimos(usuarios, livros)

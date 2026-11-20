@@ -1,3 +1,6 @@
+import logging
+
+log = logging.getLogger("cadastro_livro")
 class Livro:
 
     def __init__(self, id_livro, titulo, disponivel=True):
@@ -20,8 +23,10 @@ class GerenciadorLivros:
     def cadastrar(self, id_livro, titulo):
 
         if id_livro in self.livros:
+            log.warning("Livro já cadastrado com esse ID (id_livro=%s)", id_livro)
             raise ValueError("Livro já cadastrado com esse ID.")
         self.livros[id_livro] = Livro(id_livro, titulo)
+        log.info("Livro cadastrado com sucesso (id_livro=%s)", id_livro)
         return self.livros[id_livro]
 
     def buscar(self, id_livro):
