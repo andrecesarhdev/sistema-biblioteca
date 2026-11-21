@@ -12,6 +12,11 @@ services:
       - biblioteca-dados:/app/dados
     env_file:
       - ../.env # o .env continua na raiz do projeto
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - biblioteca-net
 
@@ -37,8 +42,51 @@ services:
     networks:
       - biblioteca-net
 
+  loki:
+    image: grafana/loki:3.2.0
+    command: -config.file=/etc/loki/loki-config.yml
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/loki-config.yml
+      - loki-dados:/loki
+    # sem "ports": o Loki fica acessível só dentro da rede do compose
+    networks:
+      - biblioteca-net
+
+  alloy:
+    image: grafana/alloy:v1.4.2
+    command:
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.alloy
+    volumes:
+      - ./alloy/config.alloy:/etc/alloy/config.alloy
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "12345:12345" # interface do Alloy
+    depends_on:
+      - loki
+    networks:
+      - biblioteca-net
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    env_file:
+      - ../.env # define GF_SECURITY_ADMIN_USER e GF_SECURITY_ADMIN_PASSWORD
+    volumes:
+      - ./grafana/provisioning/datasources/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - grafana-dados:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - loki
+    networks:
+      - biblioteca-net
+
 volumes:
   biblioteca-dados:
+  loki-dados:
+  grafana-dados:
 
 networks:
   biblioteca-net:

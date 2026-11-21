@@ -1,6 +1,6 @@
 import logging
 
-log_cadastro = logging.getLogger("cadastro usuário")
+log_cadastro = logging.getLogger("cadastro_usuario")
 log_login = logging.getLogger("login")
 
 class Usuario:
