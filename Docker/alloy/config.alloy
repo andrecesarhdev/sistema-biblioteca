@@ -1,0 +1,47 @@
+// 1. Descobre só o container da aplicação
+discovery.docker "containers" {
+  host             = "unix:///var/run/docker.sock"
+  refresh_interval = "5s"
+
+  filter {
+    name   = "label"
+    values = ["com.docker.compose.service=biblioteca"]
+  }
+}
+
+// 2. Lê os logs (stdout/stderr) desses containers
+loki.source.docker "biblioteca" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.docker.containers.targets
+  labels     = { app = "biblioteca" }
+  forward_to = [loki.process.biblioteca.receiver]
+}
+
+// 3. Processa: descarta o que não é log e extrai level e funcionalidade
+loki.process "biblioteca" {
+  // os menus e prompts (print) também saem no stdout: ficam de fora
+  stage.match {
+    selector = `{app="biblioteca"} !~ "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9:]{8} (INFO|WARNING|ERROR) [[]"`
+    action   = "drop"
+  }
+
+  stage.regex {
+    expression = `(?P<level>INFO|WARNING|ERROR) \[(?P<funcionalidade>[a-z_]+)\]`
+  }
+
+  stage.labels {
+    values = {
+      level          = "",
+      funcionalidade = "",
+    }
+  }
+
+  forward_to = [loki.write.loki.receiver]
+}
+
+// 4. Envia ao Loki
+loki.write "loki" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

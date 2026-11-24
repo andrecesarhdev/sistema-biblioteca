@@ -1,3 +1,8 @@
+import logging
+
+log_cadastro = logging.getLogger("cadastro_usuario")
+log_login = logging.getLogger("login")
+
 class Usuario:
 
     def __init__(self, id_usuario, nome, senha):
@@ -20,9 +25,11 @@ class GerenciadorUsuarios:
     def cadastrar(self, id_usuario, nome, senha):
 
         if id_usuario in self.usuarios:
+            log_cadastro.warning("Cadastro duplicado: usuário já cadastrado com esse ID (id_usuario=%s)", id_usuario)
             raise ValueError("Usuário já cadastrado com esse ID.")
 
         self.usuarios[id_usuario] = Usuario(id_usuario, nome, senha)
+        log_cadastro.info("Usuário cadastrado com sucesso (id_usuario=%s)", id_usuario)
         return self.usuarios[id_usuario]
 
     def buscar(self, id_usuario):
@@ -35,10 +42,13 @@ class GerenciadorUsuarios:
         usuario = self.buscar(id_usuario)
         
         if usuario is None:
-            raise ValueError("Usuario não encontrado")
+            log_login.warning("Tentativa de login inválida: usuário não encontrado (id_usuario=%s)", id_usuario)
+            raise ValueError("Usuário não encontrado")
         
         if usuario.senha != senha:
+            log_login.warning("Tentativa de login inválida: senha incorreta (id_usuario=%s)", id_usuario)
             raise ValueError("Senha incorreta")
         
+        log_login.info("Login realizado com sucesso (id_usuario=%s)", id_usuario)
         return usuario
         
